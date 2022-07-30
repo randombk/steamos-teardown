@@ -1,6 +1,8 @@
 # steamos-teardown
 
-An **UNOFFICIAL** repository of information about SteamOS 3, the system powering the Valve Steam Deck. **Pull Requests Are Welcome!**
+An **UNOFFICIAL** repository of information about SteamOS 3, the system powering the Valve Steam Deck.
+
+**Pull Requests Are Welcome!**
 
 * The contents of this repository are not endorsed or verified by Valve in any way.
 * I make no guarantees of accuracy or correctness:

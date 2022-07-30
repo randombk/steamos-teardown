@@ -31,6 +31,8 @@ The contents of this boot partition is very simple:
 
 Exactly how this stage remembers which image to boot is currently unknown. The two interesting files, `A.conf` and `B.conf` are fairly simple and do not contain an obvious flag for which one is active. It is possible the image selection is baked into the `bootx64.efi` binary itself. As `steamos-bootconf` is a binary, we'll need to reverse it to extract its secrets.
 
+An example contents of `B.conf` is as follows:
+
 ```
 boot-requested-at: 0
 boot-other: 0

@@ -33,11 +33,11 @@ OS Image B:
     -> /root                        => /home/.steamos/offload/root
     -> /srv                         => /home/.steamos/offload/srv
     -> /var/cache/pacman            => /home/.steamos/offload/var/cache/pacman
-    -> /var/lib/docker              => /home/.steamos/offload/lib/docker
-    -> /var/lib/flatpak             => /home/.steamos/offload/lib/flatpak
-    -> /var/lib/systemd/coredump    => /home/.steamos/offload/lib/systemd/coredump
-    -> /var/log                     => /home/.steamos/offload/log
-    -> /var/tmp                     => /home/.steamos/offload/tmp
+    -> /var/lib/docker              => /home/.steamos/offload/var/lib/docker
+    -> /var/lib/flatpak             => /home/.steamos/offload/var/lib/flatpak
+    -> /var/lib/systemd/coredump    => /home/.steamos/offload/var/lib/systemd/coredump
+    -> /var/log                     => /home/.steamos/offload/var/log
+    -> /var/tmp                     => /home/.steamos/offload/var/tmp
 ```
 
 ## Read-Only OS
@@ -50,7 +50,7 @@ OS Image B:
 * Interestingly, `/var/lib/docker` is also persisted despite Docker and its alternatives not being installed.
 * Logs and coredumps are persisted if they are saved to the appropriate locations in `/var/lib`. `/tmp` is a ramdisk and will be cleared on reboot.
 
-**`/etc` is writable, but not persistent**
+**`/etc` is writable, but not persistent.** 
 `/etc` is implemented as an `overlayfs` overlay between the read-only root partition and a writable overlay upper partition. However, there are separate upper partitions for each A/B image, so swapping images will also result in swapping out the contents of `/etc`. 
 
 **Writing to other locations is possible via the `steamos-readonly` utility**, which is a wrapper around standard Linux commands to remount a BTRFS root as RW or RO. However as Valve has consistently pointed out, any changes here is subject to resets upon system updates.

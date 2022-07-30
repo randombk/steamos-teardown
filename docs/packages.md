@@ -1,8 +1,11 @@
 # Default System Packages
 
-SteamOS comes with the following packages pre-installed. All but seven are standard ArchLinux packages:
+SteamOS comes with the following packages pre-installed. All but ten are standard ArchLinux packages:
 
 ```
+jupiter-hw-support
+jupiter-legacy-support
+steam-im-modules
 steam-jupiter-stable            => Steam Client
 steamdeck-kde-presets           => Self explanatory
 steamos-atomupd-client-git      => Atomic update utility

@@ -1,14 +1,17 @@
 # Partition Layout and the Read-Only OS Implementation
 
-## Redundant System Copies
+## Two System Copies
 
 **SteamOS is comprised of two full copies, called 'Image A' and 'Image B'.**
 
-The system will have one of the images chosen as the 'active' side, and will consistently boot from that image until it is told to swap via `steamos-bootconf`. Each image has its own set of system root, EFI, and configuration partitions. With the exception of the `/home` partition, all other files will be swapped out if the image changes.
+The system will have one of the images chosen as the 'active' side, and will consistently boot from that image until it is told to swap via `steamos-bootconf`. Each image has its own set of system root, EFI, and configuration partitions. The `/home` partition is shared across both sides, though files in the `/var` partition are synced under normal operation.
 
 * Which image is currently active can be found using `steamos-bootconf list-images` or `findmnt -no partlabel /`.
-* We can reboot into the 'other' image using the `steamos-set-bootmode reboot-other` command.
+* We can reboot into the 'other' image using the `steamos-set-bootmode reboot-other` command. However, this is not recommended.
   * Unlike most other SteamOS commands, this one is a binary application as it's a `suid` application.
+* We see how this setup maps to the idea of "slots" in the [RAUC Update mechanism used by SteamOS](system-updates.md).
+
+This setup is ultimately there to support the [SteamOS Atomic Update mechanism](system-updates.md), and despite initial appearances is *not* there for redundancy.
 
 ## Partition Table
 
@@ -20,12 +23,12 @@ SteamOS is divided into eight partitions, laid out in the following fashion:
 OS Image A:
     /dev/vda2 => EFI (A) [VFAT, 32MB, Not Mounted by Default]
     /dev/vda4 => Root (A) [BTRFS, 5GB, RO]
-    /dev/vda6 => OverlayFS upper for /etc (A) [EXT4, 256MB, RW]
+    /dev/vda6 => /var (A) [EXT4, 256MB, RW]
 
 OS Image B:
     /dev/vda3 => EFI (B) [VFAT, 32MB, Not Mounted by Default]
     /dev/vda5 => Root (B) [BTRFS, 5GB, RO]
-    /dev/vda7 => OverlayFS upper for /etc (B) [EXT4, 256MB, RW]
+    /dev/vda7 => /var (B) [EXT4, 256MB, RW]
 
 /dev/vda8 => /home [EXT4, <remaining space>, RW]
     Numerous system directories are bind mounted to folders under /home/.steamos:
@@ -42,7 +45,7 @@ OS Image B:
 
 ## Read-Only OS
 
-**The only safe, persistent storage is located under `/home` or one of the 'offload'-bound paths.**
+**`/home` is the preferred safe and persistent storage (or one of the 'offload'-bound paths pointing to `/home`).**
 
 * This means that user-specific configuration, application settings, documents, etc are safely stored and will not be removed upon system updates.
 * Flatpaks are stored in `/var/lib/flatpak` and will be similarly persisted.
@@ -50,10 +53,17 @@ OS Image B:
 * Interestingly, `/var/lib/docker` is also persisted despite Docker and its alternatives not being installed.
 * Logs and coredumps are persisted if they are saved to the appropriate locations in `/var/lib`. `/tmp` is a ramdisk and will be cleared on reboot.
 
-**`/etc` is writable, but not persistent.** 
-`/etc` is implemented as an `overlayfs` overlay between the read-only root partition and a writable overlay upper partition. However, there are separate upper partitions for each A/B image, so swapping images will also result in swapping out the contents of `/etc`. 
+**Despite initial appearances, `/var` is persistent**
 
-**Writing to other locations is possible via the `steamos-readonly` utility**, which is a wrapper around standard Linux commands to remount a BTRFS root as RW or RO. However as Valve has consistently pointed out, any changes here is subject to resets upon system updates.
+* During system update, there is a post-update hook to sync the two `/var` partitions.
+* Changes made to `/var` in the time between a successful system update and a reboot are at risk of being deleted (except for the bind-mounted directories).
+
+**`/etc` is writable.**
+
+* `/etc` is implemented as an `overlayfs` overlay between the read-only root partition and the `/var/lib/overlays/etc/upper` directory, which is a writable partition.
+* See the section on `/var` for warnings about when changes might get lost.
+
+**Writing to the root partition is possible via the `steamos-readonly` utility**, which is a wrapper around standard Linux commands to remount a BTRFS root as RW or RO. However as Valve has consistently pointed out, any changes here is *will* be lost upon system updates.
 
 ## OSTree
 

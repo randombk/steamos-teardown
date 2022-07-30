@@ -18,7 +18,7 @@ An **UNOFFICIAL** repository of information about SteamOS 3, the system powering
 
 ### SteamOS Customizations
 
-SteamOS 3 is built upon [Arch Linux](https://wiki.archlinux.org/), but applies heavy customizations that deviate from a plain Arch install in significant ways. This section aims to document these differences for any tinkers interested in customizing the OS.
+SteamOS 3 is built upon [Arch Linux](https://wiki.archlinux.org/), but applies heavy customizations that deviate from a plain Arch install in significant ways. This section aims to document these differences for any tinkerers interested in customizing the OS.
 
 * [Partition Layout and the Read-Only OS Implementation](docs/partitions.md)
 * [Booting SteamOS](docs/boot.md)

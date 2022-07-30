@@ -31,7 +31,7 @@ The contents of this boot partition is very simple:
 
 Exactly how this stage remembers which image to boot is currently unknown. The two interesting files, `A.conf` and `B.conf` are fairly simple and do not contain an obvious flag for which one is active. It is possible the image selection is baked into the `bootx64.efi` binary itself. As `steamos-bootconf` is a binary, we'll need to reverse it to extract its secrets.
 
-An example contents of `B.conf` is as follows:
+The statistics files are used in part to handle [rollback logic in the case of a failed update](system-updates.md#32-rauc-bootloader-backend). An example contents of `B.conf` is as follows:
 
 ```
 boot-requested-at: 0
@@ -91,7 +91,7 @@ menuentry 'SteamOS' --class steamos --class gnu-linux --class gnu --class os $me
 
 One interesting note is the `steamenv_boot` command, which is a non-standard extension presumably implemented directly inside `grubx64.efi`.
 
-The files in the `SteamOS/partsets` directory contain the disk partition UUIDs for each partition. How these are used during boot is unknown. For instance, the `all` file contains:
+The files in the `SteamOS/partsets` directory contain the disk partition UUIDs for each partition. How these are used during boot is unknown, but they are used in numerous system utilities such as during updates. For instance, the `all` file contains:
 
 ```
 esp 910fa777-03cd-7142-9f3f-bead6d122f49

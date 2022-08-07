@@ -32,10 +32,11 @@ SteamOS 3 is built upon [Arch Linux](https://wiki.archlinux.org/), but applies h
 * Default Background Services - TODO
 * [Glossary of Terms and Codenames](docs/glossary.md)
 
-### Guides
+### Guides & Other Resources
 
 These are third-party guides I've found helpful in my explorations. Follow these at your own risk!
 
+* User [evlaV](https://gitlab.com/evlaV) on GitLab maintains a series of repos with the sources of custom SteamOS binaries.
 * [Running the Steam Deck’s OS in a virtual machine using QEMU](https://blogs.igalia.com/berto/2022/07/05/running-the-steam-decks-os-in-a-virtual-machine-using-qemu/)
 
 ## License

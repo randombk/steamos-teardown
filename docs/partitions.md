@@ -67,7 +67,7 @@ OS Image B:
 
 ## OSTree
 
-It is not entirely clear whether SteamOS uses `ostree`. There are several indications that it does (i.e. `/etc/ostree-mkinitcpio.conf`), but it does not use standard update mechanisms (`/etc/ostree` is entirely empty).
+SteamOS uses `flatpak`, which in turn uses `ostree`. There are several indications that it does (i.e. `/etc/ostree-mkinitcpio.conf`), but it does not use standard update mechanisms (`/etc/ostree` is entirely empty).
 
 ## Misc Outputs
 

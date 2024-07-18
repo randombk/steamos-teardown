@@ -17,21 +17,23 @@ The contents of this boot partition is very simple:
 ├── [2.0K]  efi
 │   ├── [2.0K]  boot
 │   │   ├── [123K]  bootx64.efi         => Initial EFI boot image
-│   │   └── [   0]  steamcl-restricted  => Empty file, unknown purpose
+│   │   └── [   0]  steamcl-restricted  => Empty 'flag file', tells the chainloader not to check other devices for SteamOS images
 │   └── [2.0K]  steamos
 │       ├── [123K]  steamcl.efi         => Same file as 'bootx64.efi' above
-│       ├── [   0]  steamcl-restricted  => Empty file, unknown purpose
+│       ├── [   0]  steamcl-restricted  => Same flag file as above
 │       ├── [  76]  steamcl-version     => Simple version string plus the SHA256 of 'bootx64.efi'
 │       └── [897K]  steamos-bootconf    => Identical to `/usr/bin/steamos-bootconf`
 └── [2.0K]  SteamOS
     └── [2.0K]  conf
-        ├── [ 233]  A.conf  => Statistics file for Image A
-        └── [ 296]  B.conf  => Statistics file for Image B
+        ├── [ 233]  A.conf  => bootconf file for Image A
+        └── [ 296]  B.conf  => bootconf file for Image B
 ```
 
-Exactly how this stage remembers which image to boot is currently unknown. The two interesting files, `A.conf` and `B.conf` are fairly simple and do not contain an obvious flag for which one is active. It is possible the image selection is baked into the `bootx64.efi` binary itself. As `steamos-bootconf` is a binary, we'll need to reverse it to extract its secrets.
+The files `A.conf` and `B.conf` are known internally to the chainloader as bootconf files. The information provided in them helps the chainloader determine which image to boot. Specifically, the chainloader sorts all bootconf files oldest to newest based on the `boot-requested-at` entry in each bootconf that contains datestamps (formatted `YYYYmmDDHHMMSS`). If `image-invalid` is set, indicating that the image is damaged, the bootconf is considered older than any bootconf that doesn't have it set, reducing its priority in boot.
 
-The statistics files are used in part to handle [rollback logic in the case of a failed update](system-updates.md#32-rauc-bootloader-backend). An example contents of `B.conf` is as follows:
+Then each bootconf is looped through starting with the newest first. If `boot-other` is set, the bootconf is skipped, if not, then it's chosen to boot.
+
+The bootconf files are used in part to handle [rollback logic in the case of a failed update](system-updates.md#32-rauc-bootloader-backend). An example contents of `B.conf` is as follows:
 
 ```
 boot-requested-at: 0
@@ -61,7 +63,7 @@ The stage 2 EFI image is specific to each image, and is located at `/dev/vda2` (
 │   └── [2.0K]  steamos
 │       ├── [5.5K]  grub.cfg        => GRUB configuration
 │       └── [656K]  grubx64.efi     => GRUB EFI image
-└── [2.0K]  SteamOS                 
+└── [2.0K]  SteamOS
     └── [2.0K]  partsets            => Text files containing disk UUIDs
         ├── [ 126]  A
         ├── [ 347]  all

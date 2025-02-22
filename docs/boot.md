@@ -2,7 +2,7 @@
 
 **Pre-Reads**:
 
-* [Partition Layout and the Read-Only OS Implementation](docs/partitions.md)
+* [Partition Layout and the Read-Only OS Implementation](/docs/partitions.md)
 
 The SteamOS boot process is a three-staged UEFI affair.
 
